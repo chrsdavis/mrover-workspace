@@ -2,7 +2,7 @@
 
 #include "common.hpp"
 #include <vector>
- /** 
+ /**
  * \class EuclideanClusterExtractor
  * \brief Finds distinct clusters in the point cloud and identifies them
  */
@@ -20,7 +20,7 @@ class EuclideanClusterExtractor {
             float minZ;
             float maxZ;
         };
-        /** 
+        /**
          * \struct ObsReturn
          * \brief Basic datatype to return found clusters
          */
@@ -31,9 +31,9 @@ class EuclideanClusterExtractor {
 
         int bearingRight;
         int bearingLeft;
- 
+
         /**
-         * \brief EuclideanClusterExtractor constructor 
+         * \brief EuclideanClusterExtractor constructor
          * \param tolerance How far one point can be from another and still be considered "connected", or part of the same cluster
          * \param minSize The minimum number of points that can define a unique cluster (helpful for noise removal)
          * \param maxSize The maximum number of points that can define a unique cluster (helpful for not identifying walls)
@@ -45,7 +45,7 @@ class EuclideanClusterExtractor {
 
         /**
          * \brief Extracts clusters and packages them into ObsReturn
-         * \param pc Point cloud to search 
+         * \param pc Point cloud to search
          * \param bins Bins which sub-divide space from VoxelFilter
          */
         ObsReturn extractClusters(GPU_Cloud &pc, Bins &bins);
@@ -56,7 +56,7 @@ class EuclideanClusterExtractor {
         float tolerance;
         int minSize;
         float maxSize;
-        
+
         //internal information
         int* neighborLists; //lists of neighbors for each point inline
         int* listStart; //starting indexes of adjacency lists for each pt (size of max pt cloud)
@@ -68,7 +68,7 @@ class EuclideanClusterExtractor {
         //Bin creation search data
         float* mins;
         float* maxes;
-        int** bins; 
+        int** bins;
         int* binCount;
         int partitions;
 };

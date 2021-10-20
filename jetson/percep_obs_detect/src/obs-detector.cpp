@@ -8,10 +8,10 @@ using namespace std::chrono;
 ObsDetector::ObsDetector(DataSource source, OperationMode mode, ViewerType viewer) : source(source), mode(mode), viewer(viewer), record(false)
 {
     setupParamaters("");
-    
+
     //Init data stream from source
     if(source == DataSource::ZED) {
-        zed.open(init_params); 
+        zed.open(init_params);
         auto camera_config = zed.getCameraInformation(cloud_res).camera_configuration;
         defParams = camera_config.calibration_parameters.left_cam;
     } else if(source == DataSource::FILESYSTEM) {
@@ -56,9 +56,9 @@ void ObsDetector::setupParamaters(std::string parameterFile) {
 
     //Zed params
     init_params.coordinate_units = sl::UNIT::MILLIMETER;
-    init_params.camera_resolution = sl::RESOLUTION::VGA; 
+    init_params.camera_resolution = sl::RESOLUTION::VGA;
     init_params.camera_fps = 100;
-    
+
     //Set the viewer paramas
     defParams.fx = 79.8502;
     defParams.fy = 80.275;
@@ -71,18 +71,18 @@ void ObsDetector::setupParamaters(std::string parameterFile) {
     passZ = new PassThrough('z', 100, 7000); //7000
     ransacPlane = new RansacPlane(make_float3(0, 1, 0), 8, 600, 80, cloud_res.area(), 80);
     voxelGrid = new VoxelGrid(10);
-    ece = new EuclideanClusterExtractor(300, 30, 0, cloud_res.area(), 9); 
+    ece = new EuclideanClusterExtractor(300, 30, 0, cloud_res.area(), 9);
 }
-        
+
 
 void ObsDetector::update() {
     if(source == DataSource::ZED) {
         sl::Mat frame(cloud_res, sl::MAT_TYPE::F32_C4, sl::MEM::GPU);
         zed.grab();
-        zed.retrieveMeasure(frame, sl::MEASURE::XYZRGBA, sl::MEM::GPU, cloud_res); 
+        zed.retrieveMeasure(frame, sl::MEASURE::XYZRGBA, sl::MEM::GPU, cloud_res);
         update(frame);
     } else if(source == DataSource::FILESYSTEM) {
-        //DEBUG 
+        //DEBUG
         //frameNum = 250;
         sl::Mat frame(cloud_res, sl::MAT_TYPE::F32_C4, sl::MEM::CPU);
         fileReader.load(frameNum, frame, true);
@@ -117,19 +117,19 @@ void ObsDetector::update() {
     //         handleBuffer[sizeof(my_handle)] = 0;
     //     }
     //}
-} 
+}
 
 // Call this directly with ZED GPU Memory
 void ObsDetector::update(sl::Mat &frame) {
 
     // Get a copy if debug is enabled
-    sl::Mat orig; 
+    sl::Mat orig;
     if(mode != OperationMode::SILENT) {
         frame.copyTo(orig, sl::COPY_TYPE::GPU_GPU);
     }
 
     // Convert ZED format into CUDA compatible type
-    GPU_Cloud pc; 
+    GPU_Cloud pc;
     getRawCloud(pc, frame);
 
     // Processing
@@ -138,9 +138,9 @@ void ObsDetector::update(sl::Mat &frame) {
     cout << "Pass-Through ran\n";
     std::cout << "pre ransac:" << pc.size << endl;
     ransacPlane->computeModel(pc);
-    std::cout << "post ransac:" << pc.size << endl; 
-    
-    
+    std::cout << "post ransac:" << pc.size << endl;
+
+
     Bins bins;
 
     #if VOXEL
@@ -149,9 +149,9 @@ void ObsDetector::update(sl::Mat &frame) {
 
     //
     auto grabStart = high_resolution_clock::now();
-    obstacles = ece->extractClusters(pc, bins); 
+    obstacles = ece->extractClusters(pc, bins);
     auto grabEnd = high_resolution_clock::now();
-    auto grabDuration = duration_cast<microseconds>(grabEnd - grabStart); 
+    auto grabDuration = duration_cast<microseconds>(grabEnd - grabStart);
 /*
     //LCM
     obstacleMessage.bearing = 9;
@@ -166,7 +166,7 @@ void ObsDetector::update(sl::Mat &frame) {
         } else {
            pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_pcl(new pcl::PointCloud<pcl::PointXYZRGB>);
            ZedToPcl(pc_pcl, frame);
-           pclViewer->updatePointCloud(pc_pcl); //update the viewer 
+           pclViewer->updatePointCloud(pc_pcl); //update the viewer
         }
     }
 
@@ -176,7 +176,7 @@ void ObsDetector::update(sl::Mat &frame) {
     }
 
     if(framePlay) frameNum++;
-    
+
 }
 
 void ObsDetector::populateMessage(float leftBearing, float rightBearing, float distance) {
@@ -218,6 +218,11 @@ void ObsDetector::startRecording(std::string directory) {
     record = true;
 }
 
+void ObsDetector::test(vector<EuclideanClusterExtractor::ObsReturn> truth, vector<EuclideanClusterExtractor::ObsReturn> eval)
+{
+  
+}
+
  ObsDetector::~ObsDetector() {
      delete passZ;
      delete ransacPlane;
@@ -237,7 +242,7 @@ int main() {
     while(true) {
         obs.spinViewer();
     }
-    
+
 
     return 0;
 }
