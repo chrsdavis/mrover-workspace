@@ -242,19 +242,26 @@ void ObsDetector::test(vector<pair<EuclideanClusterExtractor::ObsReturn,Euclidea
       test_bins[eval.size()] = &eval[j];
     }
     //Exp obstacles are now sorted by collision with true Obstacles
-
+    for(int i = 0; i < )
   }
 }
 
 double ObsDetector::calculateIOU(const EuclideanClusterExtractor::Obstacle*& truth_obst, const EuclideanClusterExtractor::Obstacle*& eval_obst)
 {
-  xa = std::max(truth_obst->minX,eval_obst->minX);
-  xb = std::min(truth_obst->maxX,eval_obst->maxX);
-  ya = std::max(truth_obst->minY,eval_obst->minY);
-  yb = std::min(truth_obst->maxY,eval_obst->maxY);
-  za = std::max(truth_obst->minZ,eval_obst->minZ);
-  zb = std::min(truth_obst->maxZ,eval_obst->maxZ);
+  double xa = static_cast<double>(std::max(truth_obst->minX,eval_obst->minX));
+  double xb = static_cast<double>(std::min(truth_obst->maxX,eval_obst->maxX));
+  double ya = static_cast<double>(std::max(truth_obst->minY,eval_obst->minY));
+  double yb = static_cast<double>(std::min(truth_obst->maxY,eval_obst->maxY));
+  double za = static_cast<double>(std::max(truth_obst->minZ,eval_obst->minZ));
+  double zb = static_cast<double>(std::min(truth_obst->maxZ,eval_obst->maxZ));
 
+  double intersection = (xa - xb) * (ya - yb) * (za - zb);
+  double u = (
+    (truth_obst->maxX - truth_obst->minX) * (truth_obst->maxY - truth_obst->minY) * (truth_obst->maxZ - truth_obst->minZ) +
+    (eval_obst->maxX - eval_obst->minX) * (eval_obst->maxY - eval_obst->minY) * (eval_obst->maxZ - eval_obst->minZ) -
+    intersection);
+
+  return intersection / u;
 }
 
  ObsDetector::~ObsDetector() {

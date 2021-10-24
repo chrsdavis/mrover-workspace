@@ -92,12 +92,21 @@ class ObsDetector {
          */
         void populateMessage(float leftBearing, float rightBearing, float distance);
 
+    public:
         /**
          * \brief [WIP] Compares True v Calculated Obstacles
          * \param truth: the real bodies to be detected
          * \param eval: OBS detector's experimental result
          */
         auto test(vector<EuclideanClusterExtractor::ObsReturn> truth, vector<EuclideanClusterExtractor::ObsReturn> eval);
+
+    private:
+       /**
+        * \brief [WIP] Calculates intersection over union
+        * \param truth_obst: pointer to true obstacle
+        * \param eval_obst: pointer to experimental obstacle
+        */
+       double calculateIOU(const EuclideanClusterExtractor::Obstacle*& truth_obst, const EuclideanClusterExtractor::Obstacle*& eval_obst);
 
     private:
 
