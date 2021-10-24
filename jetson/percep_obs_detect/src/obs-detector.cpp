@@ -218,9 +218,43 @@ void ObsDetector::startRecording(std::string directory) {
     record = true;
 }
 
-void ObsDetector::test(vector<EuclideanClusterExtractor::ObsReturn> truth, vector<EuclideanClusterExtractor::ObsReturn> eval)
+void ObsDetector::test(vector<pair<EuclideanClusterExtractor::ObsReturn,EuclideanClusterExtractor::ObsReturn>> cases)
 {
-  
+  for(int i = 0; i < cases.size(); i++)
+  {
+    EuclideanClusterExtractor::ObsReturn& truth = cases[i].first;
+    EuclideanClusterExtractor::ObsReturn& eval = cases[i].second;
+
+    EuclideanClusterExtractor::Obstacle* test_bins[eval.size()];
+
+    for(int j = 0; j < eval.size(); j++)
+    {
+      EuclideanClusterExtractor::Obstacle& eval_obst = eval[j];
+      for(int k = 0; k < truth.size(); k++)
+      {
+        if((truth[k].maxX > eval[j].minX) && (truth[k].minX < eval[j].maxX) && (truth[k].maxY > eval[j].minY) && (truth[k].minY < eval[j].maxY) && (truth[k].maxZ > eval[j].minZ) && (truth[k].minZ < eval[j].maxZ))
+        {
+          test_bins[j] = &eval[j];
+          break;
+        }
+      }
+      // If not in superset of true Obstacles (i.e. false positive)
+      test_bins[eval.size()] = &eval[j];
+    }
+    //Exp obstacles are now sorted by collision with true Obstacles
+
+  }
+}
+
+double ObsDetector::calculateIOU(const EuclideanClusterExtractor::Obstacle*& truth_obst, const EuclideanClusterExtractor::Obstacle*& eval_obst)
+{
+  xa = std::max(truth_obst->minX,eval_obst->minX);
+  xb = std::min(truth_obst->maxX,eval_obst->maxX);
+  ya = std::max(truth_obst->minY,eval_obst->minY);
+  yb = std::min(truth_obst->maxY,eval_obst->maxY);
+  za = std::max(truth_obst->minZ,eval_obst->minZ);
+  zb = std::min(truth_obst->maxZ,eval_obst->maxZ);
+
 }
 
  ObsDetector::~ObsDetector() {
