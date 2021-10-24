@@ -218,14 +218,26 @@ void ObsDetector::startRecording(std::string directory) {
     record = true;
 }
 
-void ObsDetector::test(vector<pair<EuclideanClusterExtractor::ObsReturn,EuclideanClusterExtractor::ObsReturn>> cases)
+void ObsDetector::test(const vector<GPU_Cloud>& raw_data, const vector<ObsReturn>& truth_list)
 {
-  for(int i = 0; i < cases.size(); i++)
+  vector<ObsReturn> measured;
+  actual.reserve(raw_data.size());
+
+  for(size_t i = 0; i < raw_data.size(); i++)
+  {
+    Bins b;
+    passZ->run(raw_data[i]);
+    ransacPlane->computeModel(raw_data[i]);
+    b = voxelGrid->run(raw_data[i]);
+    measured.push_back(ece->extractClusters(raw_data[i],b));
+  }
+
+  for(size_t i = 0; i < actual.size(); i++)
   {
     EuclideanClusterExtractor::ObsReturn& truth = cases[i].first;
     EuclideanClusterExtractor::ObsReturn& eval = cases[i].second;
 
-    EuclideanClusterExtractor::Obstacle* test_bins[eval.size()];
+    EuclideanClusterExtractor::Obstacle* test_bins[eval.size()+1];
 
     for(int j = 0; j < eval.size(); j++)
     {

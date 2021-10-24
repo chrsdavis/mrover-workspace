@@ -95,6 +95,7 @@ class ObsDetector {
     public:
         /**
          * \brief [WIP] Compares True v Calculated Obstacles
+         * \param vector of pairs: first is true obstacles, second is experimental obstacles
          * \param truth: the real bodies to be detected
          * \param eval: OBS detector's experimental result
          */
