@@ -232,43 +232,51 @@ void ObsDetector::test(const vector<GPU_Cloud>& raw_data, const vector<ObsReturn
     measured.push_back(ece->extractClusters(raw_data[i],b));
   }
 
-  for(size_t i = 0; i < actual.size(); i++)
+  for(size_t i = 0; i < measured.size(); i++)
   {
-    EuclideanClusterExtractor::ObsReturn& truth = cases[i].first;
-    EuclideanClusterExtractor::ObsReturn& eval = cases[i].second;
+    EuclideanClusterExtractor::ObsReturn& truth = truth_list.obs[i];
+    EuclideanClusterExtractor::ObsReturn& eval = measured.obs[i];
 
-    EuclideanClusterExtractor::Obstacle* test_bins[eval.size()+1];
+    vector<EuclideanClusterExtractor::Obstacle> test_bins;
+    test_bins.reserve(eval.size()+1);
+
+
 
     for(int j = 0; j < eval.size(); j++)
     {
+      bool collision = false;
       EuclideanClusterExtractor::Obstacle& eval_obst = eval[j];
       for(int k = 0; k < truth.size(); k++)
       {
         if((truth[k].maxX > eval[j].minX) && (truth[k].minX < eval[j].maxX) && (truth[k].maxY > eval[j].minY) && (truth[k].minY < eval[j].maxY) && (truth[k].maxZ > eval[j].minZ) && (truth[k].minZ < eval[j].maxZ))
         {
-          test_bins[j] = &eval[j];
-          break;
+          test_bins[j] = eval[j];
+          collision = true;
         }
       }
       // If not in superset of true Obstacles (i.e. false positive)
-      test_bins[eval.size()] = &eval[j];
+      if(!collision)
+        test_bins[eval.size()] = &eval[j];
     }
     //Exp obstacles are now sorted by collision with true Obstacles
-    for(int i = 0; i < )
+    for(int i = 0; i < test_bins.size())
+    {
+      
+    }
   }
 }
 
-double ObsDetector::calculateIOU(const EuclideanClusterExtractor::Obstacle*& truth_obst, const EuclideanClusterExtractor::Obstacle*& eval_obst)
+double ObsDetector::calculateIOU(const EuclideanClusterExtractor::Obstacle*& truth_obst, const EuclideanClusterExtractor::Obstacle& eval_obst)
 {
-  double xa = static_cast<double>(std::max(truth_obst->minX,eval_obst->minX));
-  double xb = static_cast<double>(std::min(truth_obst->maxX,eval_obst->maxX));
-  double ya = static_cast<double>(std::max(truth_obst->minY,eval_obst->minY));
-  double yb = static_cast<double>(std::min(truth_obst->maxY,eval_obst->maxY));
-  double za = static_cast<double>(std::max(truth_obst->minZ,eval_obst->minZ));
-  double zb = static_cast<double>(std::min(truth_obst->maxZ,eval_obst->maxZ));
+  float xa = (std::max(truth_obst->minX,eval_obst->minX));
+  float xb = (std::min(truth_obst->maxX,eval_obst->maxX));
+  float ya = (std::max(truth_obst->minY,eval_obst->minY));
+  float yb = (std::min(truth_obst->maxY,eval_obst->maxY));
+  float za = (std::max(truth_obst->minZ,eval_obst->minZ));
+  float zb = (std::min(truth_obst->maxZ,eval_obst->maxZ));
 
-  double intersection = (xa - xb) * (ya - yb) * (za - zb);
-  double u = (
+  float intersection = (xa - xb) * (ya - yb) * (za - zb);
+  float u = (
     (truth_obst->maxX - truth_obst->minX) * (truth_obst->maxY - truth_obst->minY) * (truth_obst->maxZ - truth_obst->minZ) +
     (eval_obst->maxX - eval_obst->minX) * (eval_obst->maxY - eval_obst->minY) * (eval_obst->maxZ - eval_obst->minZ) -
     intersection);
