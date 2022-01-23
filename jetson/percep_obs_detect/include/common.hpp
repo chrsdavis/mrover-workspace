@@ -97,12 +97,16 @@ int ceilDiv(int x, int y);
 /**
  * \brief Get a CUDA workable gpu point cloud struct from Zed GPU cloud
  */
-void getRawCloud(GPU_Cloud &pc, sl::Mat zed_cloud);
+void getRawCloud(GPU_Cloud &pc, sl::Mat &zed_cloud);
 
 /**
  * \brief Copys one GPU cloud's data to another
  */
 void copyCloud(GPU_Cloud &to, GPU_Cloud &from);
+
+GPU_Cloud createCloud(int size);
+
+void deleteCloud(GPU_Cloud &cloud);
 
 /**
  * \brief Iterate through the unused memory in a GPU cloud and set it to zeros

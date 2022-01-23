@@ -2,12 +2,6 @@
 #include <iostream>
 #include <sl/Camera.hpp>
 
-#include <pcl/common/common_headers.h>
-#include <pcl/point_types.h>
-
-
-#include <pcl/common/time.h>
-
 #include <vector>
 #include <algorithm>
 
@@ -35,7 +29,7 @@ inline float convertColor(float colorIn) {
     return *reinterpret_cast<float *> (&color_uint);
 }
 
-void getRawCloud(GPU_Cloud &pc, sl::Mat zed_cloud) {
+void getRawCloud(GPU_Cloud &pc, sl::Mat &zed_cloud) {
     sl::float4* ptr = zed_cloud.getPtr<sl::float4>(sl::MEM::GPU);
     pc.data = (float4*)ptr;
     pc.size = zed_cloud.getWidth() * zed_cloud.getHeight();
@@ -46,6 +40,10 @@ GPU_Cloud createCloud(int size) {
     cudaMalloc(&g.data, sizeof(float4)*size);
     g.size = size;
     return g;
+}
+
+void deleteCloud(GPU_Cloud &cloud) {
+    cudaFree(cloud.data);
 }
 
 __global__ void copyKernel(GPU_Cloud to, GPU_Cloud from) {
