@@ -492,6 +492,7 @@ void Viewer::drawUI() {
     if (ImGui::RadioButton("ECE", procStage == ProcStage::POSTECE)) procStage = ProcStage::POSTECE;
     if (ImGui::RadioButton("Bounding", procStage == ProcStage::POSTBOUNDING)) procStage = ProcStage::POSTBOUNDING;
     if (ImGui::RadioButton("Bearing", procStage == ProcStage::POSTBEARING)) procStage = ProcStage::POSTBEARING;
+    if (ImGui::RadioButton("Complete", procStage == ProcStage::COMPLETE)) procStage = ProcStage::COMPLETE;
     ImGui::End();
 
 #ifndef VIEWER_ONLY
