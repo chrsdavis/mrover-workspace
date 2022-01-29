@@ -9,7 +9,6 @@ using namespace std;
 using namespace std::chrono_literals;
  
 int main() {
-  
  /* --- Reading in Config File --- */
   rapidjson::Document mRoverConfig;
   ifstream configFile;
@@ -24,7 +23,8 @@ int main() {
   configFile.close();
   mRoverConfig.Parse( config.c_str() );
 
-  /* --- Camera Initializations --- */
+  
+    /* --- Camera Initializations --- */
     Camera cam(mRoverConfig);
     int iterations = 0;
     cam.grab();
@@ -84,6 +84,7 @@ int main() {
     cam.record_ar_init();
     #endif
 
+
   /* --- Main Processing Stuff --- */
   while (true) {
         //Check to see if we were able to grab the frame
@@ -142,25 +143,23 @@ int main() {
 
         //Run Obstacle Detection
         pointcloud.pcl_obstacle_detection();  
-        obstacle_return obstacleOutput (pointcloud.leftBearing, pointcloud.rightBearing, pointcloud.distance);
+        obstacle_return obstacle_detection (pointcloud.bearing, pointcloud.distance);
 
         //Outlier Detection Processing
         outliers.pop_back(); //Remove outdated outlier value
 
-        if(pointcloud.leftBearing > 0.05 || pointcloud.leftBearing < -0.05)
+        if(pointcloud.bearing > 0.05 || pointcloud.bearing < -0.05)
             outliers.push_front(true);//if an obstacle is detected in front
         else 
             outliers.push_front(false); //obstacle is not detected
 
         if(outliers == checkTrue) //If past iterations see obstacles
-            lastObstacle = obstacleOutput;
+            lastObstacle = obstacle_detection;
         else if (outliers == checkFalse) // If our iterations see no obstacles after seeing obstacles
-            lastObstacle = obstacleOutput;
+            lastObstacle = obstacle_detection;
 
-        //Update LCM 
-        obstacleMessage.bearing = lastObstacle.leftBearing; // Update LCM bearing field
-        obstacleMessage.rightBearing = lastObstacle.rightBearing;
-        obstacleMessage.distance = lastObstacle.distance; // Update LCM distance field
+        obstacleMessage.distance = lastObstacle.distance; //update LCM distance field
+        obstacleMessage.bearing = lastObstacle.bearing; //update LCM bearing field
         #if PERCEPTION_DEBUG
             cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Path Sent: " << obstacleMessage.bearing << "\n";
             cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Distance Sent: " << obstacleMessage.distance << "\n";

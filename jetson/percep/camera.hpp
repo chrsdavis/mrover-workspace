@@ -20,7 +20,8 @@ private:
 	
 public:
 
-	int FRAME_WRITE_INTERVAL;
+    //constants
+    int FRAME_WRITE_INTERVAL;
 
 	Camera(const rapidjson::Document &config);
 	~Camera();
