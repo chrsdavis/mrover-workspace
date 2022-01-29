@@ -6,6 +6,8 @@ using namespace std::chrono;
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <stdlib.h>
+#include <string.h>
 
 ObsDetector::ObsDetector(DataSource source, OperationMode mode, ViewerType viewerType)
         : source(source), mode(mode), viewerType(viewerType) {
@@ -150,6 +152,15 @@ void ObsDetector::handleParameters() {
 // Call this directly with ZED GPU Memory
 void ObsDetector::update(GPU_Cloud pc) {
     handleParameters();
+    GPU_Cloud* pc_raw = new GPU_Cloud; //copy of original point cloud
+
+    if (viewer.procStage == ProcStage::COMPLETE)
+    { //copy original pc (c array so a lot of mem stuff)
+      *pc_raw = pc;
+      pc_raw.data = static_cast<int *>(malloc(pc.size + 1));
+      std::memcpy(pc_raw.data, pc.data);
+      pc_raw = pc_raw_temp;
+    }
 
     // Processing
     if (viewer.procStage > ProcStage::RAW) {
@@ -161,7 +172,12 @@ void ObsDetector::update(GPU_Cloud pc) {
         drawGround(plane);
     }
 
-    viewer.updatePointCloud(pc);
+    if (viewer.procStage != procStage::COMPLETE)
+    {
+        viewer.updatePointCloud(pc);
+    }else{
+        viewer.updatePointCloud(pc_raw);
+    }
 
     if (viewer.procStage > ProcStage::POSTRANSAC) {
 #if VOXEL
@@ -182,6 +198,8 @@ void ObsDetector::update(GPU_Cloud pc) {
     if (viewer.procStage > ProcStage::POSTBOUNDING) {
         createBearing();
     }
+
+
 
     if (viewer.framePlay) {
         viewer.frame++;
