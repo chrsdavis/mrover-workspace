@@ -13,7 +13,7 @@
 
 using namespace std;
 
-// Took the shaders from the ZED code :) 
+// Took the shaders from the ZED code :)
 GLchar const* OBJ_VERTEX_SHADER =
         "#version 330 core\n"
         "in vec3 in_Vertex;\n"
@@ -56,7 +56,7 @@ GLchar const* PC_FRAGMENT_SHADER =
         "}";
 
 /*
- * Shader 
+ * Shader
  */
 
 Shader::Shader(GLchar const* vs, GLchar const* fs) {
@@ -149,7 +149,7 @@ void Shader::swap(Shader& other) {
 }
 
 
-/* 
+/*
  * 3D Object
  */
 
@@ -200,7 +200,7 @@ void Object3D::update(std::vector<vec3>& points, std::vector<vec3>& colors, std:
     // Indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesGPU);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_DYNAMIC_DRAW);
-    // Unbind 
+    // Unbind
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -285,7 +285,7 @@ void PointCloud::swap(PointCloud& other) {
  */
 
 
-/* 
+/*
  * Viewer
  */
 
@@ -389,6 +389,10 @@ void Viewer::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
             }
             case GLFW_KEY_6: {
                 viewer->procStage = ProcStage::POSTBEARING;
+                break;
+            }
+            case GLFW_KEY_7: {
+                viewer->procStage = ProcStage::COMPLETE;
                 break;
             }
             case GLFW_KEY_ESCAPE: {

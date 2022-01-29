@@ -151,9 +151,9 @@ public:
     glm::vec3 eulerOrientation{};
 };
 
-// Vertex and Frag shader, stole this straight from ZED example 
-// but this is basically the same in every OpenGL program so 
-// it will work even without ZED 
+// Vertex and Frag shader, stole this straight from ZED example
+// but this is basically the same in every OpenGL program so
+// it will work even without ZED
 class Shader {
 public:
 
@@ -185,8 +185,8 @@ private:
  *** Define which stage of the filtering process will be shown in the viewer
  */
 enum class ProcStage {
-    RAW, POSTPASS, POSTRANSAC, POSTECE, POSTBOUNDING, POSTBEARING
-};
+    RAW, POSTPASS, POSTRANSAC, POSTECE, POSTBOUNDING, POSTBEARING, COMPLETE
+};//
 
 class Viewer {
 public:
