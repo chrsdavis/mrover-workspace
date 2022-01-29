@@ -175,9 +175,9 @@ void ObsDetector::update(GPU_Cloud pc) {
     {
         viewer.updatePointCloud(pc);
     }else{
-        viewer.updatePointCloud(pc_raw);
-        delete pc_raw;
+        viewer.updatePointCloud(pc_raw); //copy of raw pc
     }
+    delete pc_raw;
 
     if (viewer.procStage > ProcStage::POSTRANSAC) {
 #if VOXEL
@@ -198,8 +198,6 @@ void ObsDetector::update(GPU_Cloud pc) {
     if (viewer.procStage > ProcStage::POSTBOUNDING) {
         createBearing();
     }
-
-
 
     if (viewer.framePlay) {
         viewer.frame++;
