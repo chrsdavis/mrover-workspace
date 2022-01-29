@@ -159,7 +159,6 @@ void ObsDetector::update(GPU_Cloud pc) {
       *pc_raw = pc;
       pc_raw.data = static_cast<int *>(malloc(pc.size + 1));
       std::memcpy(pc_raw.data, pc.data);
-      pc_raw = pc_raw_temp;
     }
 
     // Processing
@@ -177,6 +176,7 @@ void ObsDetector::update(GPU_Cloud pc) {
         viewer.updatePointCloud(pc);
     }else{
         viewer.updatePointCloud(pc_raw);
+        delete pc_raw;
     }
 
     if (viewer.procStage > ProcStage::POSTRANSAC) {
