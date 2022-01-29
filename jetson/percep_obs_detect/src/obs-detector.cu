@@ -175,7 +175,7 @@ void ObsDetector::update(GPU_Cloud pc) {
     {
         viewer.updatePointCloud(pc);
     }else{
-        viewer.updatePointCloud(pc_raw); //copy of raw pc
+        viewer.updatePointCloud(*pc_raw); //copy of raw pc
     }
     delete pc_raw;
 
