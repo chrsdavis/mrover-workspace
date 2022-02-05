@@ -157,8 +157,8 @@ void ObsDetector::update(GPU_Cloud pc) {
     if (viewer.procStage == ProcStage::COMPLETE)
     { //copy original pc (c array so a lot of mem stuff)
       *pc_raw = pc;
-      pc_raw.data = static_cast<int *>(malloc(pc.size + 1));
-      std::memcpy(pc_raw.data, pc.data);
+      pc_raw->data = static_cast<int *>(malloc(pc.size + 1));
+      std::memcpy(pc_raw->data, pc.data, pc.size);
     }
 
     // Processing
@@ -171,7 +171,7 @@ void ObsDetector::update(GPU_Cloud pc) {
         drawGround(plane);
     }
 
-    if (viewer.procStage != procStage::COMPLETE)
+    if (viewer.procStage != ProcStage::COMPLETE)
     {
         viewer.updatePointCloud(pc);
     }else{
